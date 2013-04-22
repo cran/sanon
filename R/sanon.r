@@ -348,8 +348,8 @@ if(class(X) != "numeric") X = as.numeric(X)
 }
 
 covarnames = colnames(X)
-if(class(X) != "matrix") X = as.matrix(X)
 if(!is.null(naY)) X = X[-naY,]
+if(class(X) != "matrix") X = as.matrix(X)
 }else{covarnames = NULL}
 
 ## Number of covariables ##
@@ -607,7 +607,7 @@ group = x$grp; if(!is.null(group)) names(group) = strsplit(substr(names(group), 
 if(missing(ref)) ref = levels(group[,1])[1]
 strt=x$strt; if(!is.null(strt)) names(strt) = substr(names(strt), 6, nchar(names(strt))-1)
 covar=x$covar; if(!is.null(covar)) names(covar) = substr(names(covar), 7, nchar(names(covar))-1)
-catecovar=x$catecovar; if(!is.null(catecovar)) names(catecovar) = strsplit(substr(names(catecovar), 11, nchar(names(catecovar))-1), ",")[[1]][1]
+catecovar=x$catecovar; if(!is.null(catecovar)) names(catecovar) = unlist(lapply(strsplit(substr(names(catecovar), 11, nchar(names(catecovar))-1), ","), function(z) z[1]))
 if(!is.null(ncol(catecovar))) covref = unlist(sapply(1:ncol(catecovar), function(x) levels(catecovar[,x])[1]))
 
 est = sanon.default(outcome=outcome, group=group, strt=strt, covar=covar, catecovar = catecovar, ref=ref, covref = covref,...)
@@ -817,8 +817,8 @@ x
 #' ##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
 #' data(resp)
 #' P = rbind(rep(0, 4), diag(4), rep(0, 4))
-#' out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P") + strt(center) 
-#' + strt(sex) + covar(age), data=resp, P=P)
+#' out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P")
+#'  + strt(center) + strt(sex) + covar(age), data=resp, P=P)
 #' # each four visits
 #' confint(out23)
 #'
@@ -884,8 +884,8 @@ cat("\n")
 #' ##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
 #' data(resp)
 #' P = rbind(rep(0, 4), diag(4), rep(0, 4))
-#' out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P") + strt(center) 
-#' + strt(sex) + covar(age), data=resp, P=P)
+#' out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P")
+#'  + strt(center) + strt(sex) + covar(age), data=resp, P=P)
 #'
 #' # Homogeneity of the xi_k across the four visits
 #' contrast(out23, C=cbind(diag(3), rep(-1, 3)))
