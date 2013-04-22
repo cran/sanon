@@ -1,0 +1,70 @@
+\docType{methods}
+\name{confint.sanon}
+\alias{confint.sanon}
+\alias{print.confint.sanon}
+\title{Confidence Intervals for Model Parameters}
+\usage{
+  \method{confint}{sanon} (object, parm = NULL,
+    level = 0.95, ...)
+
+  \method{print}{confint.sanon} (x, ...)
+}
+\arguments{
+  \item{object,x}{an object of class "\code{sanon}",
+  usually, a result of a call to \code{\link{sanon}}}
+
+  \item{parm}{a specification of which parameters are to be
+  given confidence intervals, either a vector of numbers or
+  a vector of names. If missing, all parameters are
+  considered.}
+
+  \item{level}{the confidence level required.}
+
+  \item{...}{further arguments passed to or from other
+  methods.}
+}
+\value{
+  \item{ci}{A matrix (or vector) with columns giving
+  Mann-Whiteney estimates and their lower and upper
+  confidence limits for each parameter with estimates. The
+  interval will be labelled as Lower for (1 - level)/2
+  limit and Upper for 1 - (1 - level)/2 limit (by default
+  0.025 and 0.975). }
+
+  \item{level}{Confidence level}
+
+  \item{advarnames}{Adjust variable names in the weighted
+  least squares method}
+}
+\description{
+  Computes confidence intervals for one or more parameters
+  in a fitted model.
+}
+\details{
+  Confidence intervals for adjusted parameters in the
+  weighted least squares are computed based on an
+  asymptotic normal.
+}
+\examples{
+##### Example 3.1 Randomized Clinical Trial of Chronic Pain #####
+data(cpain)
+out1 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
+confint(out1)
+
+##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
+data(resp)
+P = rbind(rep(0, 4), diag(4), rep(0, 4))
+out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P") + strt(center)
++ strt(sex) + covar(age), data=resp, P=P)
+# each four visits
+confint(out23)
+}
+\seealso{
+  Other sanon: \code{\link{catecovar}},
+  \code{\link{covar}}, \code{\link{grp}},
+  \code{\link{print.sanon}},
+  \code{\link{print.summary.sanon}}, \code{\link{sanon}},
+  \code{\link{sanon.default}}, \code{\link{sanon.formula}},
+  \code{\link{strt}}, \code{\link{summary.sanon}}
+}
+

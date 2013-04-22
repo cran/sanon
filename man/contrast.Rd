@@ -1,0 +1,75 @@
+\docType{methods}
+\name{contrast}
+\alias{contrast}
+\alias{print.contrast}
+\title{Contrast for Model Parameters}
+\usage{
+  contrast(object, C = diag(length(object$b)),
+    confint = FALSE, level = 0.95, ...)
+
+  \method{print}{contrast} (x, ...)
+}
+\arguments{
+  \item{object,x}{an object of class "\code{sanon}",
+  usually, a result of a call to \code{\link{sanon}}.}
+
+  \item{C}{contrast matrix. The number of column should be
+  same as the length of \code{b} in outputs of
+  \code{sanon}.}
+
+  \item{confint}{logical value for whether the confidence
+  interval is computed (only if C has one row).}
+
+  \item{level}{the confidence level required (only if C has
+  one row).}
+
+  \item{...}{further arguments passed to or from other
+  methods.}
+}
+\value{
+  \item{C}{contrast matrix}
+
+  \item{Cb}{contrast estimates}
+
+  \item{VCb}{variance and covariance matrix of \code{Cb}}
+
+  \item{se}{standard error of \code{Cb}}
+
+  \item{level}{confidence level}
+
+  \item{UL}{upper confidence limit (only if the number of
+  row of C = 1, otherwise \code{NULL})}
+
+  \item{LL}{lower confidence limit (only if the number of
+  row of C = 1, otherwise \code{NULL})}
+
+  \item{Q}{test statistic}
+
+  \item{df}{degree of freedom}
+
+  \item{p}{p-value}
+}
+\description{
+  Inference by contrast of parameters in a fitted model.
+}
+\details{
+  This function provide the inference based on contrast
+  after applying the function \code{\link{sanon}}. The
+  contrast matrix C should be defined by the user. If the
+  the number of row of C = 1, the confidence interval for
+  the estimator is produced.
+}
+\examples{
+##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
+data(resp)
+P = rbind(rep(0, 4), diag(4), rep(0, 4))
+out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P") + strt(center)
++ strt(sex) + covar(age), data=resp, P=P)
+
+# Homogeneity of the xi_k across the four visits
+contrast(out23, C=cbind(diag(3), rep(-1, 3)))
+
+# Comparison between treatments for the average of the xi_k across the 4 visits
+contrast(out23, C=matrix(rep(1, 4)/4, ncol=4))
+}
+

@@ -1,0 +1,213 @@
+\docType{methods}
+\name{sanon}
+\alias{print.sanon}
+\alias{sanon}
+\alias{sanon.default}
+\alias{sanon.formula}
+\title{Non-Parametric Covariable Adjustment for Stratified Rank Measures of Association}
+\usage{
+  sanon(outcome, ...)
+
+  \method{sanon}{default} (outcome, group, strt = NULL,
+    covar = NULL, catecovar = NULL, ref = NULL,
+    covref = NULL, P = NULL, res.na.action = "default",
+    ...)
+
+  \method{sanon}{formula} (formula, data = list(),
+    ref = NULL, ...)
+
+  \method{print}{sanon} (x, ...)
+}
+\arguments{
+  \item{outcome}{vector of observations of length n, or a
+  matrix with n rows for the response (or outcome)
+  varialbes}
+
+  \item{group}{numeric vector of observations of length n
+  for treatment group. The reference group can be specified
+  in \code{ref}.}
+
+  \item{formula}{a formula object, with the response on the
+  left of a ~ operator, and the terms on the right.}
+
+  \item{data}{a data.frame in which to interpret the
+  variables named in the formula.}
+
+  \item{strt}{vector of observations of length n, or a
+  matrix with n rows for strata.}
+
+  \item{covar}{numeric vector of observations of length n,
+  or a matrix with n rows for covariable.}
+
+  \item{ref}{character for the reference group for
+  treatment group in \code{group}.}
+
+  \item{P}{a (only) matrix for weighted least square
+  estimator.}
+
+  \item{catecovar}{numeric or factor vector of observations
+  of length n, or a matrix with n rows for categorical
+  covariable.}
+
+  \item{covref}{character for the reference group for
+  categorical covariables in \code{catecovar}.}
+
+  \item{res.na.action}{for setting NA actions. "default",
+  "LOCF1", "LOCF2", "replace", and "remove" are available.
+  default is "default". see the details.}
+
+  \item{x}{an object of class "\code{sanon}", usually, a
+  result of a call to \code{\link{sanon}}}
+
+  \item{...}{further arguments passed to or from other
+  methods.}
+}
+\value{
+  \item{N}{Sample size}
+
+  \item{Nna}{tne number of subjects with missing values}
+
+  \item{nhik}{Sample size in each strata, group, and
+  response}
+
+  \item{nik}{Sample size in each group and response}
+
+  \item{xi}{(multivariate) Mann-Whitney estimate(s) that
+  addresses the comparison between two randomized groups}
+
+  \item{g}{the difference estimates between mean
+  covariable}
+
+  \item{f}{a vector consisting of \code{xi} and \code{g}}
+
+  \item{Vf}{estimated covariance matrix of \code{f}}
+
+  \item{b}{fully adjustmented estimators for all
+  covariables and the strata}
+
+  \item{Vb}{covariance matrix of \code{b}}
+
+  \item{se}{standard error of \code{b}}
+
+  \item{Q}{test statistics for \code{b}}
+
+  \item{p}{p-value for \code{b}}
+
+  \item{outnames}{outcome or response names}
+
+  \item{covarnames}{covariable names}
+
+  \item{advarnames}{variable names adjusting in the
+  weighted least squares}
+
+  \item{bnames}{variable names of adjusted in the weighted
+  least squares}
+
+  \item{reslevels}{levels for response variables}
+
+  \item{grouplevels}{levels for the group variable}
+
+  \item{strtout}{resulting (cross-classification) strata}
+
+  \item{strtlevels}{resulting (cross-classification) strata
+  levels}
+
+  \item{strtnames}{resulting (cross-classification) strata
+  names}
+
+  \item{matP}{design matrix used in the weighted least
+  squares}
+}
+\description{
+  This is a function for computing a stratified
+  multivariate Mann-Whitney estimator that addresses the
+  comparison between two randomized groups for a strictly
+  ordinal response variable. Response variables may have
+  some missing completely at random (MCAR) values for some
+  patients. Non-parametric covariable adjustment is
+  considered through the difference estimates between mean
+  covariable and the weighted least squares method.
+  Although such estimators can be computed directly as
+  weighted linear combinations of within-stratum
+  Mann-Whitney estimators, consistent estimation of their
+  covariance matrix is done using methods for multivariate
+  U-statistics.
+}
+\details{
+  \code{sanon} has two specifications for the input,
+  variable and formula based. In the variable based input,
+  one can specify R objects to outcome, group, and strata
+  variables, and covariable. In the formula based input,
+  the formula consistis of variable names in a data.frame.
+  The strata and group variables, and covariable are
+  recognized by functions \code{\link{strt}},
+  \code{\link{grp}}, \code{\link{covar}}, and
+  \code{\link{catecovar}}. \code{outcome} can be contained
+  missing values, which should be coded by \code{NA}. Four
+  options for the management of missing values can be
+  specifed in the argument \code{res.na.action};
+  \code{"default"} = the method in Kawaguchi et al. (2011),
+  \code{"LOCF1"} and \code{"LOCF2"} = last observation
+  carried forward with respect to kernels of U-statistics
+  and observed velues, repsectively, \code{"replace"} =
+  missing values are managed as tied with all other values
+  in the same stratum, and \code{"remove"} = the complete
+  cases analaysis. For \code{res.na.action = "LOCF1"} or
+  \code{"LOCF2"}, the order in the outcome is considered as
+  the time order in imputing. if the baseline measurement
+  is missing, then the corresponding subject is removed.
+  \code{outcome} can be also multiple (repeatly measured).
+  If more than two strata are specified, these are taking a
+  cross-classification. The group variable can be specifies
+  its reference group in the argument \code{ref} in the
+  \code{sanon} or in the function \code{grp}.
+}
+\examples{
+##### Example 3.1 Randomized Clinical Trial of Chronic Pain #####
+data(cpain)
+out11 = sanon(outcome=cpain[,"response"], group=cpain[,"treat"],
+strt=cpain[,c("center", "diagnosis")], ref="placebo")
+out11
+summary(out11)
+
+# formula is also available
+out12 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
+out12
+summary(out12)
+
+##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
+data(resp)
+out21 = sanon(outcome=resp[,c("baseline", "visit1", "visit2", "visit3", "visit4")],
+group=resp[,"treatment"], strt=resp[,c("center", "sex")], covar = resp[,"age"], ref="P")
+
+out21
+summary(out21)
+
+# formula is also available
+out22 = sanon(cbind(baseline, visit1, visit2, visit3, visit4)
+~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp)
+out22
+summary(out22)
+
+# the matrix P can be specified
+P = rbind(rep(0, 4), diag(4), rep(0, 4))
+out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4)
+~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp, P=P)
+out22
+summary(out23)
+}
+\references{
+  Kawaguchi, A., Koch, G. G., Wang, X. (2011): Stratified
+  Multivariate Mann-Whitney Estimators for the Comparison
+  of Two Treatments with Randomization Based Covariance
+  Adjustment. Statistics in Biopharmaceutical Research,
+  Vol. 3, No. 2, 217-231.
+}
+\seealso{
+  Other sanon: \code{\link{catecovar}},
+  \code{\link{confint.sanon}}, \code{\link{covar}},
+  \code{\link{grp}}, \code{\link{print.confint.sanon}},
+  \code{\link{print.summary.sanon}}, \code{\link{strt}},
+  \code{\link{summary.sanon}}
+}
+

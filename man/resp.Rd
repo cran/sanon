@@ -1,0 +1,47 @@
+\docType{data}
+\name{resp}
+\alias{resp}
+\title{Respiratory Disorder Data}
+\format{A data frame with 111 observations and 9 variables.}
+\description{
+  The data are from a randomized clinical trial to compare
+  a test treatment to placebo for a respiratory disorder,
+  and listings of the data appear in Stokes et al. (2000,
+  chap. 15, pp. 495-496) and Koch et al. (1990). The
+  variables are as follows:
+}
+\details{
+  \describe{ \item{\code{center}}{a factor vector for two
+  centers} \item{\code{treatment}}{a factor with levels
+  \code{A} and \code{P} for active and placebo treatments,
+  respectively} \item{\code{sex}}{a factor with levels
+  \code{F} and \code{M} for female and male, respectively}
+  \item{\code{age}}{a numeric vector for age}
+  \item{\code{baseline}}{a numeric vector for patient
+  global ratings of symptom control according to 5
+  categories (4 = excellent, 3 = good, 2 = fair, 1 = poor,
+  0 = terrible) at baseline measurement}
+  \item{\code{visit1}}{a numeric vector for patient global
+  ratings of symptom control at visit 1 with same
+  categories as \code{baseline}} \item{\code{visit2}}{a
+  numeric vector for patient global ratings of symptom
+  control at visit 2 with same categories as
+  \code{baseline}} \item{\code{visit3}}{a numeric vector
+  for patient global ratings of symptom control at visit 3
+  with same categories as \code{baseline}}
+  \item{\code{visit4}}{a numeric vector for patient global
+  ratings of symptom control at visit 4 with same
+  categories as \code{baseline}} }
+}
+\references{
+  Stokes, M. E., Davis, C. S., and Koch, G. G. (2000),
+  Categorical Data Analysis using the SAS System, Cary: SAS
+  Publishing.
+
+  Koch, G. G., Carr, G. J., Amara, I. A., Stokes, M. E.,
+  and Uryniak, T. J. (1990), "Categorical Data Analysis,"
+  in Statistical Methodology in Pharmaceutical Sciences,
+  ed. D. A. Berry, New York: Marcel Dekker, pp. 291-475.
+}
+\keyword{datasets}
+
