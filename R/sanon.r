@@ -162,16 +162,16 @@ NULL
 #' @rdname sanon
 #' @docType methods
 #'
-#' @param outcome vector of observations of length n, or a matrix with n rows for the response (or outcome) variables
-#' @param group numeric vector of observations of length n for treatment group. The reference group can be specified in \code{ref}.
 #' @param formula a formula object, with the response on the left of a ~ operator, and the terms on the right.
 #' @param data a data.frame in which to interpret the variables named in the formula. 
+#' @param outcome vector of observations of length n, or a matrix with n rows for the response (or outcome) variables
+#' @param group numeric vector of observations of length n for treatment group. The reference group can be specified in \code{ref}.
 #' @param strt numeric or factor vector of observations of length n, or a matrix with n rows for strata.
 #' @param covar numeric or factor vector of observations of length n, or a matrix with n rows for covariable.
 #' @param catecovar numeric or factor vector of observations of length n, or a matrix with n rows for categorical covariable.
 #' @param ref character for the reference group for treatment group in \code{group}.
 #' @param covref character vector for the reference group for categorical covariables in \code{catecovar}.
-#' @param P a (only) matrix for weighted least square estimator.
+#' @param P a matrix for weighted least squares estimation.
 #' @param res.na.action character for setting NA actions. "default", "LOCF1", "LOCF2", "replace", and "remove" are available. default is "default". see the details.
 #' @param x an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}
 #' @param ... further arguments passed to or from other methods.
@@ -203,39 +203,62 @@ NULL
 #' @examples
 #' ##### Example 3.1 Randomized Clinical Trial of Chronic Pain #####
 #' data(cpain)
-#' out11 = sanon(outcome=cpain[,"response"], group=cpain[,"treat"], 
-#' strt=cpain[,c("center", "diagnosis")], ref="placebo")
+#' out11 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
 #' out11
 #' summary(out11)
 #'
-#' # formula is also available
-#' out12 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
+#' # R objects are also available
+#' attach(cpain)
+#' out12 = sanon(outcome=response, group=treat, 
+#' strt=cbind(center, diagnosis), ref="placebo")
 #' out12
 #' summary(out12)
 #'
 #' ##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
 #' data(resp)
-#' out21 = sanon(outcome=resp[,c("baseline", "visit1", "visit2", "visit3", "visit4")], 
-#' group=resp[,"treatment"], strt=resp[,c("center", "sex")], covar = resp[,"age"], ref="P")
-#'
+#' out21 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) 
+#' ~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp)
 #' out21
 #' summary(out21)
 #'
-#' # formula is also available
+#' # the matrix P can be specified
+#' P = rbind(rep(0, 4), diag(4), rep(0, 4))
 #' out22 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) 
-#' ~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp)
+#' ~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp, P=P)
 #' out22
 #' summary(out22)
 #'
-#' # the matrix P can be specified
-#' P = rbind(rep(0, 4), diag(4), rep(0, 4))
-#' out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) 
-#' ~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp, P=P)
-#' out22
-#' summary(out23)
-#'
 
 sanon = function(outcome, ...) UseMethod("sanon")
+
+#' @rdname sanon
+#' @method sanon formula
+sanon.formula = function(formula, data=list(), ...)
+{
+mf = model.frame(formula=formula, data=data, na.action = na.pass)
+outcome = model.extract(mf, "response")
+#if(is.null(ncol(outcome))){outcome = data.frame(outcome); colnames(outcome) = names(mf)[1]}
+if(is.null(ncol(outcome))){outnames = names(mf)[1]}else{outnames = colnames(model.extract(mf, "response"))}
+outcome = get_all_vars(formula=formula, data=data)[outnames]
+
+special = c("catecovar", "covar", "strt", "grp")
+formula2 = terms(formula, special, data=data)
+mf2 = model.frame(formula2, data=data, na.action = na.pass)
+
+x = lapply(attr(formula2, "specials"), function(x){if(is.null(x)){x}else{mf2[x]}})
+
+group = x$grp; if(!is.null(group)) names(group) = strsplit(substr(names(group), 5, nchar(names(group))-1), ",")[[1]][1]
+ref = levels(group[,1])[1]
+strt=x$strt; if(!is.null(strt)) names(strt) = substr(names(strt), 6, nchar(names(strt))-1)
+covar=x$covar; if(!is.null(covar)) names(covar) = substr(names(covar), 7, nchar(names(covar))-1)
+catecovar=x$catecovar; if(!is.null(catecovar)) names(catecovar) = unlist(lapply(strsplit(substr(names(catecovar), 11, nchar(names(catecovar))-1), ","), function(z) z[1]))
+if(!is.null(ncol(catecovar))) covref = unlist(sapply(1:ncol(catecovar), function(x) levels(catecovar[,x])[1]))
+
+est = sanon.default(outcome=outcome, group=group, strt=strt, covar=covar, catecovar = catecovar, ref=ref, covref = covref,...)
+est$call = match.call()
+est$formula = formula
+est
+}
 
 #' @rdname sanon
 #' @method sanon default
@@ -585,35 +608,6 @@ strtout = strtout, strtlevels = strtlevels, strtnames = strtnames,
 matP = P)
 class(out) = "sanon"
 out
-}
-
-#' @rdname sanon
-#' @method sanon formula
-sanon.formula = function(formula, data=list(), ref=NULL, ...)
-{
-mf = model.frame(formula=formula, data=data, na.action = na.pass)
-outcome = model.extract(mf, "response")
-#if(is.null(ncol(outcome))){outcome = data.frame(outcome); colnames(outcome) = names(mf)[1]}
-if(is.null(ncol(outcome))){outnames = names(mf)[1]}else{outnames = colnames(model.extract(mf, "response"))}
-outcome = get_all_vars(formula=formula, data=data)[outnames]
-
-special = c("catecovar", "covar", "strt", "grp")
-formula2 = terms(formula, special, data=data)
-mf2 = model.frame(formula2, data=data, na.action = na.pass)
-
-x = lapply(attr(formula2, "specials"), function(x){if(is.null(x)){x}else{mf2[x]}})
-
-group = x$grp; if(!is.null(group)) names(group) = strsplit(substr(names(group), 5, nchar(names(group))-1), ",")[[1]][1]
-if(missing(ref)) ref = levels(group[,1])[1]
-strt=x$strt; if(!is.null(strt)) names(strt) = substr(names(strt), 6, nchar(names(strt))-1)
-covar=x$covar; if(!is.null(covar)) names(covar) = substr(names(covar), 7, nchar(names(covar))-1)
-catecovar=x$catecovar; if(!is.null(catecovar)) names(catecovar) = unlist(lapply(strsplit(substr(names(catecovar), 11, nchar(names(catecovar))-1), ","), function(z) z[1]))
-if(!is.null(ncol(catecovar))) covref = unlist(sapply(1:ncol(catecovar), function(x) levels(catecovar[,x])[1]))
-
-est = sanon.default(outcome=outcome, group=group, strt=strt, covar=covar, catecovar = catecovar, ref=ref, covref = covref,...)
-est$call = match.call()
-est$formula = formula
-est
 }
 
 #' @rdname sanon

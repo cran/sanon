@@ -1,6 +1,6 @@
-10e9a2203f11b595cf353d341ab975c1 *DESCRIPTION
+029dcc3e857793bfdc4cb2c9705701d8 *DESCRIPTION
 216d947bb93f8265f5041f6e7027c439 *NAMESPACE
-90604e19aee1b297b29d8d9293da11d3 *R/sanon.r
+f4f4debb94051f785e20cf6e01695a33 *R/sanon.r
 285f11c968eaabfcbc7a4b4b88bb63c5 *data/cpain.rda
 f45fd3f5f18d1f93ec9ad9ee7c518e30 *data/heartburn.rda
 7e056b43cbf80585ab99cb2d0b0d078f *data/resp.rda
@@ -16,7 +16,7 @@ a9e13f7cc7275ea4c6fa8ccd1ba5b5db *man/covar.Rd
 5e13c10f038b74107420d1a6517369fc *man/heartburn.Rd
 07282bfd46c0f3f7d3f3efbc2f25db32 *man/resp.Rd
 86aba313af6f71d237383491af506bdc *man/sanon-package.Rd
-81da43f9b5d3cc656becb11e5a0f355c *man/sanon.Rd
+46a52fdd9a4b3e30fc6918c3ee205a9b *man/sanon.Rd
 6b0e2da1a4b3de48edc959254b9a953c *man/sebor.Rd
 035221a51fbd02e0976ed205956c862c *man/skin.Rd
 1f1d0dec8b4a681ef06e26b52e199220 *man/strt.Rd

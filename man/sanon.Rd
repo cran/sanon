@@ -8,17 +8,22 @@
 \usage{
   sanon(outcome, ...)
 
+  \method{sanon}{formula} (formula, data = list(), ...)
+
   \method{sanon}{default} (outcome, group, strt = NULL,
     covar = NULL, catecovar = NULL, ref = NULL,
     covref = NULL, P = NULL, res.na.action = "default",
     ...)
 
-  \method{sanon}{formula} (formula, data = list(),
-    ref = NULL, ...)
-
   \method{print}{sanon} (x, ...)
 }
 \arguments{
+  \item{formula}{a formula object, with the response on the
+  left of a ~ operator, and the terms on the right.}
+
+  \item{data}{a data.frame in which to interpret the
+  variables named in the formula.}
+
   \item{outcome}{vector of observations of length n, or a
   matrix with n rows for the response (or outcome)
   variables}
@@ -26,12 +31,6 @@
   \item{group}{numeric vector of observations of length n
   for treatment group. The reference group can be specified
   in \code{ref}.}
-
-  \item{formula}{a formula object, with the response on the
-  left of a ~ operator, and the terms on the right.}
-
-  \item{data}{a data.frame in which to interpret the
-  variables named in the formula.}
 
   \item{strt}{numeric or factor vector of observations of
   length n, or a matrix with n rows for strata.}
@@ -49,8 +48,7 @@
   \item{covref}{character vector for the reference group
   for categorical covariables in \code{catecovar}.}
 
-  \item{P}{a (only) matrix for weighted least square
-  estimator.}
+  \item{P}{a matrix for weighted least squares estimation.}
 
   \item{res.na.action}{character for setting NA actions.
   "default", "LOCF1", "LOCF2", "replace", and "remove" are
@@ -165,36 +163,30 @@
 \examples{
 ##### Example 3.1 Randomized Clinical Trial of Chronic Pain #####
 data(cpain)
-out11 = sanon(outcome=cpain[,"response"], group=cpain[,"treat"],
-strt=cpain[,c("center", "diagnosis")], ref="placebo")
+out11 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
 out11
 summary(out11)
 
-# formula is also available
-out12 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
+# R objects are also available
+attach(cpain)
+out12 = sanon(outcome=response, group=treat,
+strt=cbind(center, diagnosis), ref="placebo")
 out12
 summary(out12)
 
 ##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
 data(resp)
-out21 = sanon(outcome=resp[,c("baseline", "visit1", "visit2", "visit3", "visit4")],
-group=resp[,"treatment"], strt=resp[,c("center", "sex")], covar = resp[,"age"], ref="P")
-
+out21 = sanon(cbind(baseline, visit1, visit2, visit3, visit4)
+~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp)
 out21
 summary(out21)
 
-# formula is also available
-out22 = sanon(cbind(baseline, visit1, visit2, visit3, visit4)
-~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp)
-out22
-summary(out22)
-
 # the matrix P can be specified
 P = rbind(rep(0, 4), diag(4), rep(0, 4))
-out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4)
+out22 = sanon(cbind(baseline, visit1, visit2, visit3, visit4)
 ~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp, P=P)
 out22
-summary(out23)
+summary(out22)
 }
 \references{
   Kawaguchi, A., Koch, G. G., Wang, X. (2011): Stratified
