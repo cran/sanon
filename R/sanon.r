@@ -146,10 +146,10 @@ NULL
 #' 
 #' \code{sanon} has two specifications for the input, variable and formula based.
 #' In the variable based input, one can specify R objects to outcome, group, and strata variables, and covariable.
-#' In the formula based input, the formula consistis of variable names in a data.frame. 
+#' In the formula based input, the formula consists of variable names in a data.frame. 
 #' The strata and group variables, and covariable are recognized by functions \code{\link{strt}}, \code{\link{grp}}, \code{\link{covar}}, and \code{\link{catecovar}}.
 #' \code{outcome} can be contained missing values, which should be coded by \code{NA}. 
-#' Four options for the management of missing values can be specifed in the argument \code{res.na.action}; 
+#' Five options for the management of missing values can be specifed in the argument \code{res.na.action}; 
 #' \code{"default"} = the method in Kawaguchi et al. (2011), \code{"LOCF1"} and \code{"LOCF2"} = last observation carried forward with respect to kernels of U-statistics and observed velues, repsectively, \code{"replace"} = missing values are managed as tied with all other values in the same stratum, and \code{"remove"} = the complete cases analaysis.
 #' For \code{res.na.action = "LOCF1"} or \code{"LOCF2"}, the order in the outcome is considered as the time order in imputing.
 #' if the baseline measurement is missing, then the corresponding subject is removed.
@@ -162,17 +162,17 @@ NULL
 #' @rdname sanon
 #' @docType methods
 #'
-#' @param outcome vector of observations of length n, or a matrix with n rows for the response (or outcome) varialbes
+#' @param outcome vector of observations of length n, or a matrix with n rows for the response (or outcome) variables
 #' @param group numeric vector of observations of length n for treatment group. The reference group can be specified in \code{ref}.
 #' @param formula a formula object, with the response on the left of a ~ operator, and the terms on the right.
-#' @param data  a data.frame in which to interpret the variables named in the formula. 
-#' @param strt vector of observations of length n, or a matrix with n rows for strata.
-#' @param covar numeric vector of observations of length n, or a matrix with n rows for covariable.
-#' @param ref character for the reference group for treatment group in \code{group}.
-#' @param P a (only) matrix for weighted least square estimator.
+#' @param data a data.frame in which to interpret the variables named in the formula. 
+#' @param strt numeric or factor vector of observations of length n, or a matrix with n rows for strata.
+#' @param covar numeric or factor vector of observations of length n, or a matrix with n rows for covariable.
 #' @param catecovar numeric or factor vector of observations of length n, or a matrix with n rows for categorical covariable.
-#' @param covref character for the reference group for categorical covariables in \code{catecovar}.
-#' @param res.na.action for setting NA actions. "default", "LOCF1", "LOCF2", "replace", and "remove" are available. default is "default". see the details.
+#' @param ref character for the reference group for treatment group in \code{group}.
+#' @param covref character vector for the reference group for categorical covariables in \code{catecovar}.
+#' @param P a (only) matrix for weighted least square estimator.
+#' @param res.na.action character for setting NA actions. "default", "LOCF1", "LOCF2", "replace", and "remove" are available. default is "default". see the details.
 #' @param x an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}
 #' @param ... further arguments passed to or from other methods.
 #' @return \item{N}{Sample size}
@@ -234,7 +234,7 @@ NULL
 #' out22
 #' summary(out23)
 #'
-#' @family sanon
+
 sanon = function(outcome, ...) UseMethod("sanon")
 
 #' @rdname sanon
@@ -637,7 +637,7 @@ cat("Design Matrix:\n")
 print(x$matP)
 cat("\n")
 if(!is.null(x$strtnames)) cat("Stratification Adjusted ")
-cat(paste("Mann-Whitney Estimate for comparison [",  x$grouplevels[2], "/", x$grouplevels[1], "] :\n"))
+cat(paste("Mann-Whitney Estimate \n for comparison [",  x$grouplevels[2], "/", x$grouplevels[1], "] :\n"))
 if(length(x$advarnames) > 0){ 
 tmpadvarnames = x$advarnames
 lim = max(which(cumsum(nchar(tmpadvarnames)) < 50))
@@ -680,7 +680,7 @@ cat("\n")
 #' ~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp))
 #' sum22
 #'
-#' @family sanon
+
 summary.sanon = function(object, ...)
 {
 tmpest = c(object$b); #tmpest[!(object$bnames %in% covarnames)] = tmpest[!(object$bnames %in% covarnames)] + 0.5
@@ -694,6 +694,7 @@ res
 
 #' @rdname summary.sanon
 #' @method print summary.sanon
+#' @family print
 print.summary.sanon = function(x, ...)
 {
 cat("Call:\n")
@@ -715,7 +716,7 @@ cat("Note that the estimates of responses are for the (MW estimate - 0.5).\n")
 
 #' Identify Group Variables
 #'
-#' This is a special function used in the context of \code{sanon}. It identifies group variables when they appear on the right hand side of a formula. 
+#' This is a special function used in the context of \code{\link{sanon}}. It identifies group variables when they appear on the right hand side of a formula. 
 #'
 #' @name grp
 #' @aliases grp
@@ -725,7 +726,7 @@ cat("Note that the estimates of responses are for the (MW estimate - 0.5).\n")
 #' @param x variable name
 #' @param ref character for the reference group for treatment group.
 #'
-#' @family sanon
+
 grp = function(x, ref=NULL){
 if(!is.null(ref)){
 x = as.factor(x)
@@ -735,7 +736,7 @@ x
 }
 #' Identify Stratification Variables
 #'
-#' This is a special function used in the context of \code{sanon}. It identifies stratification variables when they appear on the right hand side of a formula. 
+#' This is a special function used in the context of \code{\link{sanon}}. It identifies stratification variables when they appear on the right hand side of a formula. 
 #'
 #' @name strt
 #' @aliases strt
@@ -746,12 +747,12 @@ x
 #'
 #' @usage strt(x)
 #'
-#' @family sanon
+
 strt = function(x) x
 
 #' Identify Covariables
 #'
-#' This is a special function used in the context of \code{sanon}. It identifies covariables when they appear on the right hand side of a formula. 
+#' This is a special function used in the context of \code{\link{sanon}}. It identifies covariables when they appear on the right hand side of a formula. 
 #'
 #' @name covar
 #' @aliases covar
@@ -762,12 +763,12 @@ strt = function(x) x
 #'
 #' @usage covar(x)
 #'
-#' @family sanon
+
 covar = function(x) x
 
 #' Identify Categorical Covariables
 #'
-#' This is a special function used in the context of \code{sanon}. It identifies categorical covariables when they appear on the right hand side of a formula. 
+#' This is a special function used in the context of \code{\link{sanon}}. It identifies categorical covariables when they appear on the right hand side of a formula. 
 #'
 #' In the \code{sanon}, the categorical covariable is converted into a dummy variable. The reference group is specified in the \code{ref} argument.
 #'
@@ -779,7 +780,7 @@ covar = function(x) x
 #' @param x variable name
 #' @param ref character for the reference group for the categorical covariable.
 #'
-#' @family sanon
+
 catecovar = function(x, ref=NULL){
 if(!is.null(ref)){
 x = as.factor(x)
@@ -787,6 +788,73 @@ x = relevel(x, ref=ref)
 } 
 x
 }
+
+#' Extract Model Coefficients
+#' 
+#' coef is a generic function which extracts model coefficients from objects returned by modeling functions. coefficients is an alias for it. 
+#' 
+#' All object classes which are returned by model fitting functions should provide a coef method or use the default one. 
+#' 
+#' @name coef.sanon
+#' @aliases coef.sanon
+#' @rdname coef.sanon
+#' @method coef sanon
+#' @docType methods
+#'
+#' @param object an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}
+#' @param ... further arguments passed to or from other methods.
+#' @return Coefficients extracted from the model object object. 
+#'
+#' @examples
+#' ##### Example 3.1 Randomized Clinical Trial of Chronic Pain #####
+#' data(cpain)
+#' out1 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
+#' coef(out1)
+#' coefficients(out1)
+#' 
+#' ##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
+#' data(resp)
+#' P = rbind(rep(0, 4), diag(4), rep(0, 4))
+#' out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P")
+#'  + strt(center) + strt(sex) + covar(age), data=resp, P=P)
+#' # each four visits
+#' coef(out23)
+#' coefficients(out23)
+#'
+
+coef.sanon = function(object, ...) object$b
+
+#' Calculate Variance-Covariance Matrix for a Fitted Model Object
+#' 
+#' Returns the variance-covariance matrix of the main parameters of a fitted model object. 
+#' 
+#' This is a generic function. 
+#' 
+#' @name vcov.sanon
+#' @aliases vcov.sanon
+#' @rdname vcov.sanon
+#' @method vcov sanon
+#' @docType methods
+#'
+#' @param object an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}
+#' @param ... further arguments passed to or from other methods.
+#' @return Coefficients extracted from the model object object. 
+#'
+#' @examples
+#' ##### Example 3.1 Randomized Clinical Trial of Chronic Pain #####
+#' data(cpain)
+#' out1 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
+#' vcov(out1)
+#' 
+#' ##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
+#' data(resp)
+#' P = rbind(rep(0, 4), diag(4), rep(0, 4))
+#' out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P")
+#'  + strt(center) + strt(sex) + covar(age), data=resp, P=P)
+#' # each four visits
+#' vcov(out23)
+#'
+vcov.sanon = function(object, ...) object$Vb
 
 #' Confidence Intervals for Model Parameters
 #' 
@@ -822,11 +890,11 @@ x
 #' # each four visits
 #' confint(out23)
 #'
-#' @family sanon
+
 confint.sanon = function(object, parm = NULL, level = 0.95, ...)
 {
-b2 = object$b
-se = object$se
+b2 = coef(object)
+se = sqrt(diag(vcov(object)))
 za = qnorm(1-(1-level)/2)
 TAB = cbind(b2 + 0.5, b2 - za * se + 0.5, b2 + za * se + 0.5)
 colnames(TAB) = c("Estimate", "Lower", "Upper")
@@ -893,7 +961,6 @@ cat("\n")
 #' # Comparison between treatments for the average of the xi_k across the 4 visits
 #' contrast(out23, C=matrix(rep(1, 4)/4, ncol=4))
 #'
-#' @family contrast
 contrast = function(object, C = diag(length(object$b)), confint = FALSE, level = 0.95, ...)
 {
 if(class(C) != "matrix") stop("C should be matrix")

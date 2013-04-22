@@ -45,12 +45,4 @@ sum22 = summary(sanon(cbind(baseline, visit1, visit2, visit3, visit4)
 ~ grp(treatment, ref="P") + strt(center) + strt(sex) + covar(age), data=resp))
 sum22
 }
-\seealso{
-  Other sanon: \code{\link{catecovar}},
-  \code{\link{confint.sanon}}, \code{\link{covar}},
-  \code{\link{grp}}, \code{\link{print.confint.sanon}},
-  \code{\link{print.sanon}}, \code{\link{sanon}},
-  \code{\link{sanon.default}}, \code{\link{sanon.formula}},
-  \code{\link{strt}}
-}
 

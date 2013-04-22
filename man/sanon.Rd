@@ -21,7 +21,7 @@
 \arguments{
   \item{outcome}{vector of observations of length n, or a
   matrix with n rows for the response (or outcome)
-  varialbes}
+  variables}
 
   \item{group}{numeric vector of observations of length n
   for treatment group. The reference group can be specified
@@ -33,28 +33,28 @@
   \item{data}{a data.frame in which to interpret the
   variables named in the formula.}
 
-  \item{strt}{vector of observations of length n, or a
-  matrix with n rows for strata.}
+  \item{strt}{numeric or factor vector of observations of
+  length n, or a matrix with n rows for strata.}
 
-  \item{covar}{numeric vector of observations of length n,
-  or a matrix with n rows for covariable.}
-
-  \item{ref}{character for the reference group for
-  treatment group in \code{group}.}
-
-  \item{P}{a (only) matrix for weighted least square
-  estimator.}
+  \item{covar}{numeric or factor vector of observations of
+  length n, or a matrix with n rows for covariable.}
 
   \item{catecovar}{numeric or factor vector of observations
   of length n, or a matrix with n rows for categorical
   covariable.}
 
-  \item{covref}{character for the reference group for
-  categorical covariables in \code{catecovar}.}
+  \item{ref}{character for the reference group for
+  treatment group in \code{group}.}
 
-  \item{res.na.action}{for setting NA actions. "default",
-  "LOCF1", "LOCF2", "replace", and "remove" are available.
-  default is "default". see the details.}
+  \item{covref}{character vector for the reference group
+  for categorical covariables in \code{catecovar}.}
+
+  \item{P}{a (only) matrix for weighted least square
+  estimator.}
+
+  \item{res.na.action}{character for setting NA actions.
+  "default", "LOCF1", "LOCF2", "replace", and "remove" are
+  available. default is "default". see the details.}
 
   \item{x}{an object of class "\code{sanon}", usually, a
   result of a call to \code{\link{sanon}}}
@@ -138,12 +138,12 @@
   variable and formula based. In the variable based input,
   one can specify R objects to outcome, group, and strata
   variables, and covariable. In the formula based input,
-  the formula consistis of variable names in a data.frame.
+  the formula consists of variable names in a data.frame.
   The strata and group variables, and covariable are
   recognized by functions \code{\link{strt}},
   \code{\link{grp}}, \code{\link{covar}}, and
   \code{\link{catecovar}}. \code{outcome} can be contained
-  missing values, which should be coded by \code{NA}. Four
+  missing values, which should be coded by \code{NA}. Five
   options for the management of missing values can be
   specifed in the argument \code{res.na.action};
   \code{"default"} = the method in Kawaguchi et al. (2011),
@@ -202,12 +202,5 @@ summary(out23)
   of Two Treatments with Randomization Based Covariance
   Adjustment. Statistics in Biopharmaceutical Research,
   Vol. 3, No. 2, 217-231.
-}
-\seealso{
-  Other sanon: \code{\link{catecovar}},
-  \code{\link{confint.sanon}}, \code{\link{covar}},
-  \code{\link{grp}}, \code{\link{print.confint.sanon}},
-  \code{\link{print.summary.sanon}}, \code{\link{strt}},
-  \code{\link{summary.sanon}}
 }
 

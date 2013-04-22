@@ -59,12 +59,4 @@ out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, r
 # each four visits
 confint(out23)
 }
-\seealso{
-  Other sanon: \code{\link{catecovar}},
-  \code{\link{covar}}, \code{\link{grp}},
-  \code{\link{print.sanon}},
-  \code{\link{print.summary.sanon}}, \code{\link{sanon}},
-  \code{\link{sanon.default}}, \code{\link{sanon.formula}},
-  \code{\link{strt}}, \code{\link{summary.sanon}}
-}
 

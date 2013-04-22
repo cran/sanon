@@ -1,0 +1,39 @@
+\docType{methods}
+\name{vcov.sanon}
+\alias{vcov.sanon}
+\title{Calculate Variance-Covariance Matrix for a Fitted Model Object}
+\usage{
+  \method{vcov}{sanon} (object, ...)
+}
+\arguments{
+  \item{object}{an object of class "\code{sanon}", usually,
+  a result of a call to \code{\link{sanon}}}
+
+  \item{...}{further arguments passed to or from other
+  methods.}
+}
+\value{
+  Coefficients extracted from the model object object.
+}
+\description{
+  Returns the variance-covariance matrix of the main
+  parameters of a fitted model object.
+}
+\details{
+  This is a generic function.
+}
+\examples{
+##### Example 3.1 Randomized Clinical Trial of Chronic Pain #####
+data(cpain)
+out1 = sanon(response ~ grp(treat, ref="placebo") + strt(center) + strt(diagnosis), data=cpain)
+vcov(out1)
+
+##### Example 3.2 Randomized Clinical Trial of Respiratory Disorder #####
+data(resp)
+P = rbind(rep(0, 4), diag(4), rep(0, 4))
+out23 = sanon(cbind(baseline, visit1, visit2, visit3, visit4) ~ grp(treatment, ref="P")
+ + strt(center) + strt(sex) + covar(age), data=resp, P=P)
+# each four visits
+vcov(out23)
+}
+
