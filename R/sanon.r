@@ -301,8 +301,8 @@ Y = t(apply(Y, 1, function(x){ for(i in 2:length(x)){ x[i] = ifelse(is.na(x[i]),
 }
 
 ## check ##
-resuniq = apply(Y, 2, function(x) length(unique(x)) == 1)
-if(any(resuniq)) stop("Responses should not have a unique value")
+#resuniq = apply(Y, 2, function(x) length(unique(x)) == 1)
+#if(any(resuniq)) stop("Responses should not have a unique value")
 
 ##### Numbers of subjects and responses #####
 N = ifelse(!is.null(ncol(Y)), nrow(Y), length(Y))
@@ -333,8 +333,8 @@ if(class(t) != "numeric") t = as.numeric(t)
 if(!is.null(naY)) t = t[-naY]
 
 ## check ##
-resuniq2 = apply(Y, 2, function(x) aggregate(x, by=list(t), function(y) length(unique(y)) == 1)[,2])
-if(any(resuniq2)) stop("Responses should not have a unique value in each group")
+#resuniq2 = apply(Y, 2, function(x) aggregate(x, by=list(t), function(y) length(unique(y)) == 1)[,2])
+#if(any(resuniq2)) stop("Responses should not have a unique value in each group")
 
 ##### covariable #####
 X = NULL
@@ -492,8 +492,10 @@ xi = theta1 / theta2
 ##### #####
 if(r > 1){
 Dxi = diag(c(xi))
-Dthetas = cbind(solve(Dtheta1), -solve(Dtheta2))
-Vxi = Dxi %*% Dthetas %*% VF %*% t(Dthetas) %*% Dxi
+#Dthetas = cbind(solve(Dtheta1), -solve(Dtheta2))
+#Vxi = Dxi %*% Dthetas %*% VF %*% t(Dthetas) %*% Dxi
+Dthetas = cbind(diag(r), -solve(Dtheta2)^2)
+Vxi = Dthetas %*% VF %*% t(Dthetas)
 }else
 {
 Dthetas = cbind(1/theta1, -1/theta2)
@@ -816,7 +818,7 @@ x
 #' coefficients(out23)
 #'
 
-coef.sanon = function(object, ...) object$b
+coef.sanon = function(object, ...){tmpb = c(object$b); names(tmpb) = object$bnames; tmpb}
 
 #' Calculate Variance-Covariance Matrix for a Fitted Model Object
 #' 
@@ -848,7 +850,7 @@ coef.sanon = function(object, ...) object$b
 #' # each four visits
 #' vcov(out23)
 #'
-vcov.sanon = function(object, ...) object$Vb
+vcov.sanon = function(object, ...){tmpVb = object$Vb; rownames(tmpVb) = colnames(tmpVb) = object$bnames; tmpVb}
 
 #' Confidence Intervals for Model Parameters
 #' 
