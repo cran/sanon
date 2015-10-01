@@ -1,0 +1,21 @@
+bibentry(bibtype = "Article",
+  title        = "{sanon}: An {R} Package for Stratified Analysis with Nonparametric Covariable Adjustment",
+  author       = c(person(given = "Atsushi",
+                          family = "Kawaguchi"),
+                   person(given = c("Gary", "G."),
+                          family = "Koch")),
+  journal      = "Journal of Statistical Software",
+  year         = "2015",
+  volume       = "67",
+  number       = "9",
+  pages        = "1--37",
+  doi          = "10.18637/jss.v067.i09",
+
+  header       = "To cite sanon in publications use:",
+  textVersion  =
+  paste("Atsushi Kawaguchi, Gary G. Koch (2015).",
+        "sanon: An R Package for Stratified Analysis with Nonparametric Covariable Adjustment.",
+        "Journal of Statistical Software, 67(9), 1-37.",
+        "doi:10.18637/jss.v067.i09")
+)
+

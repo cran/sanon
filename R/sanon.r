@@ -10,8 +10,11 @@
 #'
 #' @author Atsushi Kawaguchi. \email{kawa_a24@@yahoo.co.jp}
 #' @seealso \code{\link{sanon}}
-#' @references Kawaguchi, A., Koch, G. G., Wang, X. (2011): Stratified Multivariate Mann-Whitney Estimators for the Comparison of Two Treatments with Randomization Based Covariance Adjustment. Statistics in Biopharmaceutical Research, Vol. 3, No. 2, 217-231. 
-#' @exportPattern '^[^\\.]'
+#' @references 
+#' Kawaguchi A., Koch, G. G. (2015). sanon: An R Package for Stratified Analysis with Nonparametric Covariable Adjustment. Journal of Statistical Software, 67(9), 1-37. doi:10.18637/jss.v067.i09
+#' 
+#' Kawaguchi A., Koch, G. G., Wang, X. (2011). Stratified Multivariate Mann-Whitney Estimators for the Comparison of Two Treatments with Randomization Based Covariance Adjustment. Statistics in Biopharmaceutical Research, Vol. 3, No. 2, 217-231. 
+#' @importFrom stats coef get_all_vars model.extract model.frame na.action na.omit na.pass pchisq printCoefmat qnorm relevel terms vcov
 NULL
 
 #' Chronic Pain Data
@@ -161,6 +164,7 @@ NULL
 #' @aliases sanon
 #' @rdname sanon
 #' @docType methods
+#' @export
 #'
 #' @param formula a formula object, with the response on the left of a ~ operator, and the terms on the right.
 #' @param data a data.frame in which to interpret the variables named in the formula. 
@@ -199,7 +203,10 @@ NULL
 #' @return \item{strtnames}{resulting (cross-classification) strata names}
 #' @return \item{matP}{design matrix used in the weighted least squares}
 #'
-#' @references Kawaguchi, A., Koch, G. G., Wang, X. (2011): Stratified Multivariate Mann-Whitney Estimators for the Comparison of Two Treatments with Randomization Based Covariance Adjustment. Statistics in Biopharmaceutical Research, Vol. 3, No. 2, 217-231. 
+#' @references 
+#' Kawaguchi A., Koch, G. G. (2015). sanon: An R Package for Stratified Analysis with Nonparametric Covariable Adjustment. Journal of Statistical Software, 67(9), 1-37. doi:10.18637/jss.v067.i09
+#' 
+#' Kawaguchi, A., Koch, G. G., Wang, X. (2011): Stratified Multivariate Mann-Whitney Estimators for the Comparison of Two Treatments with Randomization Based Covariance Adjustment. Statistics in Biopharmaceutical Research, Vol. 3, No. 2, 217-231. 
 #' @examples
 #' ##### Example 3.1 Randomized Clinical Trial of Chronic Pain #####
 #' data(cpain)
@@ -232,7 +239,7 @@ NULL
 sanon = function(outcome, ...) UseMethod("sanon")
 
 #' @rdname sanon
-#' @method sanon formula
+#' @export
 sanon.formula = function(formula, data=list(), ...)
 {
 mf = model.frame(formula=formula, data=data, na.action = na.pass)
@@ -262,6 +269,7 @@ est
 
 #' @rdname sanon
 #' @method sanon default
+#' @export
 sanon.default = function(outcome, group, strt=NULL, covar=NULL, catecovar=NULL, ref=NULL, covref=NULL, P=NULL, res.na.action = "default", ...)
 {
 #######################
@@ -614,6 +622,7 @@ out
 
 #' @rdname sanon
 #' @method print sanon
+#' @export
 print.sanon = function(x, ...)
 {
 tmpxi = c(x$xi); names(tmpxi) = x$outnames
@@ -657,6 +666,7 @@ cat("\n")
 #' @rdname summary.sanon
 #' @method summary sanon
 #' @docType methods
+#' @export
 #'
 #' @param object,x an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}
 #' @param ... further arguments passed to or from other methods.
@@ -691,6 +701,7 @@ res
 #' @rdname summary.sanon
 #' @method print summary.sanon
 #' @family print
+#' @export
 print.summary.sanon = function(x, ...)
 {
 cat("Call:\n")
@@ -718,6 +729,7 @@ cat("Note that the estimates of responses are for the (MW estimate - 0.5).\n")
 #' @aliases grp
 #' @rdname grp
 #' @docType methods
+#' @export
 #'
 #' @param x variable name
 #' @param ref character for the reference group for treatment group.
@@ -738,6 +750,7 @@ x
 #' @aliases strt
 #' @rdname strt
 #' @docType methods
+#' @export
 #'
 #' @param x variable name
 #'
@@ -754,6 +767,7 @@ strt = function(x) x
 #' @aliases covar
 #' @rdname covar
 #' @docType methods
+#' @export
 #'
 #' @param x variable name
 #'
@@ -772,6 +786,7 @@ covar = function(x) x
 #' @aliases catecovar
 #' @rdname catecovar
 #' @docType methods
+#' @export
 #'
 #' @param x variable name
 #' @param ref character for the reference group for the categorical covariable.
@@ -796,6 +811,7 @@ x
 #' @rdname coef.sanon
 #' @method coef sanon
 #' @docType methods
+#' @export
 #'
 #' @param object an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}
 #' @param ... further arguments passed to or from other methods.
@@ -831,6 +847,7 @@ coef.sanon = function(object, ...){tmpb = c(object$b); names(tmpb) = object$bnam
 #' @rdname vcov.sanon
 #' @method vcov sanon
 #' @docType methods
+#' @export
 #'
 #' @param object an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}
 #' @param ... further arguments passed to or from other methods.
@@ -863,6 +880,7 @@ vcov.sanon = function(object, ...){tmpVb = object$Vb; rownames(tmpVb) = colnames
 #' @rdname confint.sanon
 #' @method confint sanon
 #' @docType methods
+#' @export
 #'
 #' @param object,x an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}
 #' @param parm a specification of which parameters are to be given confidence intervals, either a vector of numbers or a vector of names. If missing, all parameters are considered.
@@ -902,6 +920,7 @@ res
 }
 #' @rdname confint.sanon
 #' @method print confint.sanon
+#' @export
 print.confint.sanon = function(x, ...)
 {
 cat(paste("M-W Estimate and ", 100*x$level, "% Confidence Intervals \n", sep=""))
@@ -927,6 +946,7 @@ cat("\n")
 #' @aliases contrast
 #' @rdname contrast
 #' @docType methods
+#' @export
 #'
 #' @param object,x an object of class "\code{sanon}", usually, a result of a call to \code{\link{sanon}}.
 #' @param C contrast matrix. The number of column should be same as the length of \code{b} in outputs of \code{sanon}.
@@ -984,6 +1004,7 @@ res
 
 #' @rdname contrast
 #' @method print contrast
+#' @export
 print.contrast = function(x, ...)
 {
 TAB = cbind(x$Q, x$df, x$p)
