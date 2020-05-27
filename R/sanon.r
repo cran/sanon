@@ -277,7 +277,7 @@ sanon.default = function(outcome, group, strt=NULL, covar=NULL, catecovar=NULL, 
 #######################
 if(missing(outcome)) stop("outcome should be specified")
 if(missing(group)) stop("group should be specified")
-if(class(P) != "matrix" & !is.null(P)) stop("P should be the matrix class")
+if(!inherits(P, "matrix") & !is.null(P)) stop("P should be the matrix class")
 if(!(res.na.action %in% c("default", "LOCF1", "LOCF2", "replace", "remove"))) stop(paste(res.na.action, "not a option for res.na.action"))
 
 ############################
@@ -291,7 +291,7 @@ naY = na.action(Y)
 if(!is.null(ncol(Y)))
 {
 reslevels = lapply(1:ncol(Y), function(i) levels(as.factor(Y[,i])))
-for(i in 1:ncol(Y)){if(!(class(Y[,i]) %in% c("numeric", "integer"))) Y[,i] = as.numeric(Y[,i])}
+for(i in 1:ncol(Y)){if(!inherits(Y[,i], c("numeric", "integer"))) Y[,i] = as.numeric(Y[,i])}
 }else
 {
 Y = as.matrix(Y, 1)
@@ -380,7 +380,7 @@ if(class(X) != "numeric") X = as.numeric(X)
 
 covarnames = colnames(X)
 if(!is.null(naY)) X = X[-naY,]
-if(class(X) != "matrix") X = as.matrix(X)
+if(!inherits(X, "matrix")) X = as.matrix(X)
 }else{covarnames = NULL}
 
 ## Number of covariables ##
@@ -396,7 +396,7 @@ Y[,1] = ifelse(is.na(Y[,1]), 0, Y[,1])
 Z = apply(Y, 2, function(x) as.numeric(!is.na(x)))
 Y = apply(Y, 2, function(x) ifelse(is.na(x), 0, x))
 }
-if(class(Y) != "matrix") Y = as.matrix(Y)
+if(!inherits(Y, "matrix")) Y = as.matrix(Y)
 
 ##### sample size within treatment group and strata #####
 n0 = lapply(1:ncol(Z), function(x) table(factor(t)[Z[,x] == 1], factor(S)[Z[,x] == 1]))
@@ -425,7 +425,7 @@ if( any(unlist(njudge2)) )
 {
 njudge2wh = lapply(njudge2, function(x) which(x, arr.ind = TRUE))
 njudge2names = lapply(njudge2wh, function(y) apply(y, 1, function(x) c(rownames(njudge2[[1]])[x[1]], colnames(njudge2[[1]])[x[2]])))
-njudge2names = njudge2names[unlist(lapply(njudge2names, class)) == "matrix"]
+njudge2names = njudge2names[unlist(lapply(njudge2names, function(x) inherits(x, "matrix")))]
 njudge2names2 = lapply(njudge2names, function(y) paste(apply(y, 2, function(x) paste(x[1], "group in strata", x[2])), collapse=","))
 #warning("Sample size is not greater than 4 in:\n", paste(sapply(1:length(njudge2names2), function(x) paste(njudge2names2[[x]], "for", names(njudge2names2)[x])), collapse=", "))
 }
@@ -592,10 +592,10 @@ advarnames = allnames[apply(P, 1, function(x) all(x == 0))]
 bnames = apply(P, 2, function(x) paste(rownames(P)[which(x == 1)], collapse=" + "))#allnames[!(allnames %in% advarnames)]
 
 invVf = try(solve(Vf), silent = TRUE)
-if(class(invVf) == "try-error"){
+if(inherits(invVf, "try-error")){
 warning("Vf is computationally singular.")
 e = 0.0000001
-while(class(invVf) == "try-error"){
+while(inherits(invVf, "try-error")){
 invVf = try(solve(Vf + e*diag(ncol(Vf))), silent = TRUE)
 e = 2*e
 }}
@@ -979,7 +979,7 @@ cat("\n")
 #'
 contrast = function(object, C = diag(length(object$b)), confint = FALSE, level = 0.95, ...)
 {
-if(class(C) != "matrix") stop("C should be matrix")
+if(!inherits(C, "matrix")) stop("C should be matrix")
 if(ncol(C) != length(object$b)) stop("column length of C should be same as length of b")
 if(nrow(C) != 1 & confint == TRUE) stop("Confidence interval is computed only if C has one row")
 b2 = C %*% object$b
